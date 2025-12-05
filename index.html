@@ -1,3 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Embedded Decisions Iframe</title>
+    <style>
+        .iframe-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full screen height */
+        }
+        iframe {
+            width: 50%;
+            height: 80%;
+            border: none; /* Removes default border */
+        }
+    </style>
+</head>
+<body>
 
-<p style="text-align:center;"><iframe src="http://localhost/Primary/?FlowId=01JWDYMFECEQ6WWRZ564J1H0FZ&sessionid=01KBQ4X7NGKF35WJMQDJ3C5MZF&ForceFormat=true&patientID=StringValue&alertID=StringValue&practiceID=StringValue&Location=Maximized&Chrome=Off" height="80%" width="50%"></iframe></p>
+<div class="iframe-container">
+    <iframe 
+        src="http://localhost/Primary/?FlowId=01JWDYMFECEQ6WWRZ564J1H0FZ&sessionid=01KBQ4X7NGKF35WJMQDJ3C5MZF&ForceFormat=true&patientID=StringValue&alertID=StringValue&practiceID=StringValue&Location=Maximized&Chrome=Off"
+        allowfullscreen>
+    </iframe>
+</div>
 
+</body>
+</html>
