@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic URL Loader</title>
+    <title>Popup Loader</title>
 
     <style>
         button {
@@ -19,16 +19,14 @@
 </head>
 <body>
 
-<h3>Dynamic URL Window Loader</h3>
+<h3>Dynamic URL Popup Loader</h3>
 
-<!-- Base URL -->
 <input id="baseUrl" type="text" 
        value="http://localhost/Primary/?FlowId=01JWDYMFECEQ6WWRZ564J1H0FZ&ForceFormat=true&patientID=StringValue&alertID=StringValue&practiceID=StringValue&Location=Maximized&Chrome=Off"
        style="width: 90%; padding: 8px;" />
 
 <br><br>
 
-<!-- Buttons with unique variables -->
 <button onclick="openWithValues('P001', 'A100', 'PRAC1')">Button 1</button>
 <button onclick="openWithValues('P002', 'A200', 'PRAC2')">Button 2</button>
 <button onclick="openWithValues('P003', 'A300', 'PRAC3')">Button 3</button>
@@ -37,16 +35,29 @@
 function openWithValues(patientID, alertID, practiceID) {
     let url = document.getElementById("baseUrl").value;
 
-    // Replace StringValue with actual values
+    // Replace placeholders
     url = url.replace("patientID=StringValue", "patientID=" + encodeURIComponent(patientID));
     url = url.replace("alertID=StringValue", "alertID=" + encodeURIComponent(alertID));
     url = url.replace("practiceID=StringValue", "practiceID=" + encodeURIComponent(practiceID));
 
-    // Open a new subwindow
-    const win = window.open("", "iframeWindow", "width=1000,height=700");
+    // Popup window features
+    let features = `
+        width=1100,
+        height=750,
+        left=200,
+        top=100,
+        resizable=yes,
+        scrollbars=yes,
+        toolbar=no,
+        menubar=no,
+        location=no,
+        status=no
+    `;
 
-    // Inject iframe
-    win.document.write(`
+    // Reuse same popup window instead of opening new tabs
+    let popup = window.open("", "DecisionsPopup", features);
+
+    popup.document.write(`
         <!DOCTYPE html>
         <html>
         <body style="margin:0;padding:0;">
