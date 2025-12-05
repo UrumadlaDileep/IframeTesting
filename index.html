@@ -3,50 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open URL in Iframe</title>
+    <title>Dynamic URL Loader</title>
 
     <style>
-        iframe {
-            width: 100%;
-            height: 500px;
-            border: 1px solid #ccc;
-            margin-top: 15px;
-        }
         button {
             padding: 10px 20px;
+            margin: 5px;
             background: #4A86E8;
             border: none;
             color: white;
             cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background: #3c6ec0;
+            border-radius: 6px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Configurable URL -->
-    <input id="targetUrl" type="text" 
-           value="https://www.example.com"
-           placeholder="Enter URL here"
-           style="width: 300px; padding: 8px;">
+<h3>Dynamic URL Window Loader</h3>
 
-    <button onclick="openInIframe()">Open URL</button>
+<!-- Base URL -->
+<input id="baseUrl" type="text" 
+       value="http://localhost/Primary/?FlowId=01JWDYMFECEQ6WWRZ564J1H0FZ&ForceFormat=true&patientID=StringValue&alertID=StringValue&practiceID=StringValue&Location=Maximized&Chrome=Off"
+       style="width: 90%; padding: 8px;" />
 
-    <!-- Iframe where the URL will load -->
-    <iframe id="viewerFrame"></iframe>
+<br><br>
 
-    <script>
-        function openInIframe() {
-            const url = document.getElementById("targetUrl").value;
-            const frame = document.getElementById("viewerFrame");
+<!-- Buttons with unique variables -->
+<button onclick="openWithValues('P001', 'A100', 'PRAC1')">Button 1</button>
+<button onclick="openWithValues('P002', 'A200', 'PRAC2')">Button 2</button>
+<button onclick="openWithValues('P003', 'A300', 'PRAC3')">Button 3</button>
 
-            // Set iframe source to the entered URL
-            frame.src = "https://decisions-dev-server-app.happymoss-77775cd9.northcentralus.azurecontainerapps.io/Primary/?FlowId=01JYE2CP86MWCM4FB87PBRQK06&ForceFormat=true&alertId=96b0a1fd-dd64-4d43-b547-5dbd72fa6c97&patientId=patient_id&practiceId=qa&initialForm=True&Location=Maximized&Chrome=Off";
-        }
-    </script>
+<script>
+function openWithValues(patientID, alertID, practiceID) {
+    let url = document.getElementById("baseUrl").value;
+
+    // Replace StringValue with actual values
+    url = url.replace("patientID=StringValue", "patientID=" + encodeURIComponent(patientID));
+    url = url.replace("alertID=StringValue", "alertID=" + encodeURIComponent(alertID));
+    url = url.replace("practiceID=StringValue", "practiceID=" + encodeURIComponent(practiceID));
+
+    // Open a new subwindow
+    const win = window.open("", "iframeWindow", "width=1000,height=700");
+
+    // Inject iframe
+    win.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <body style="margin:0;padding:0;">
+            <iframe src="${url}" style="width:100%;height:100vh;border:none;"></iframe>
+        </body>
+        </html>
+    `);
+}
+</script>
 
 </body>
 </html>
