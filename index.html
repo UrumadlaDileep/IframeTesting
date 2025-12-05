@@ -1,35 +1,133 @@
-<button id="openBtn">Open popup</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Overlay Iframe</title>
+<style>
+    button {
+        padding: 10px 16px;
+        background: #1976d2;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        margin-right: 10px;
+    }
+
+    /* Overlay container */
+    #overlayFrame {
+        position: fixed;
+        top: 80px;
+        right: 40px;
+        width: 800px;
+        height: 500px;
+        border: 2px solid #444;
+        background: white;
+        display: none;
+        z-index: 9999;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+        resize: both;
+        overflow: hidden;
+    }
+
+    /* Header to drag */
+    #overlayHeader {
+        background: #333;
+        color: white;
+        padding: 8px;
+        cursor: move;
+        user-select: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #overlayHeader button {
+        background: #d32f2f;
+        border-radius: 3px;
+        padding: 2px 8px;
+        font-size: 12px;
+    }
+
+    iframe {
+        width: 100%;
+        height: calc(100% - 35px);
+        border: none;
+    }
+</style>
+</head>
+<body>
+
+<h2>Parent Page Controls</h2>
+
+<input id="baseUrl" type="text" 
+value="http://localhost/Primary/?FlowId=01JWDYMFECEQ6WWRZ564J1H0FZ&ForceFormat=true&patientID=StringValue&alertID=StringValue&practiceID=StringValue&Location=Maximized&Chrome=Off"
+style="width: 100%; padding: 8px;" />
+
+<br><br>
+
+<button onclick="openFloatingFrame('P001','A100','PRAC1')">Button 1</button>
+<button onclick="openFloatingFrame('P002','A200','PRAC2')">Button 2</button>
+<button onclick="openFloatingFrame('P003','A300','PRAC3')">Button 3</button>
+
+<!-- Overlay iframe -->
+<div id="overlayFrame">
+    <div id="overlayHeader">
+        <span>Inspectable Popup Frame</span>
+        <button onclick="closeOverlay()">X</button>
+    </div>
+    <iframe id="childFrame"></iframe>
+</div>
 
 <script>
-const POPUP_NAME = 'DecisionsPopupWindow'; // stable name -> easy to spot in DevTools
+function openFloatingFrame(patientID, alertID, practiceID) {
+    let url = document.getElementById("baseUrl").value;
 
-function openPopup() {
-  // build your final URL as you already do
-  const finalUrl = 'http://localhost/Primary/?FlowId=01JWDY...&patientID=P001&alertID=A100&practiceID=PRAC1';
+    url = url.replace("patientID=StringValue", "patientID=" + patientID);
+    url = url.replace("alertID=StringValue", "alertID=" + alertID);
+    url = url.replace("practiceID=StringValue", "practiceID=" + practiceID);
 
-  const features = 'width=1100,height=700,left=200,top=100,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no';
-  const popup = window.open('', POPUP_NAME, features);
-
-  // Make the popup show a descriptive title (helps DevTools list it)
-  popup.document.open();
-  popup.document.write(`
-    <!doctype html>
-    <html>
-      <head><title>Decisions Popup — ${POPUP_NAME}</title></head>
-      <body style="margin:0">
-        <div style="padding:8px;background:#eee;border-bottom:1px solid #ccc">
-          <strong>Decisions Popup</strong> — ${POPUP_NAME}
-        </div>
-        <iframe id="theFrame" src="${finalUrl}" style="border:0;width:100%;height:calc(100vh - 40px)"></iframe>
-      </body>
-    </html>
-  `);
-  popup.document.close();
-
-  // helpful: log popup ref so you can "store as global variable" from console -> then inspect it
-  console.log('popup handle:', popup);
-  // If you want to debug in DevTools console quickly you can click the logged object and "Store as global variable"
+    document.getElementById("childFrame").src = url;
+    document.getElementById("overlayFrame").style.display = "block";
 }
 
-document.getElementById('openBtn').addEventListener('click', openPopup);
+function closeOverlay() {
+    document.getElementById("overlayFrame").style.display = "none";
+}
+
+// Enable drag functionality
+dragElement(document.getElementById("overlayFrame"), document.getElementById("overlayHeader"));
+
+function dragElement(elmnt, dragArea) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+    dragArea.onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDrag;
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+    function closeDrag() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+}
 </script>
+
+</body>
+</html>
